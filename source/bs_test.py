@@ -25,7 +25,7 @@ and they lived at the bottom of a well.</p>
 # a new page element, this class contains _find_all and attributeChecker
 pe = el.PageElement()
 
-# needs to run for initalization of the PE.
+# needs to run for initalization of the pageElement.
 pe.setup()
 
 # How to use the tag constructor, the name attribute must always be defined.
