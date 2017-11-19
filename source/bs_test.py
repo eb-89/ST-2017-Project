@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import elements as el
+import element as el
 
 #The html file
 html_doc = """
