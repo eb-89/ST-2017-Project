@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import element as el
+import bs4.element as el
 
 #The html file
 html_doc = """
@@ -20,7 +20,16 @@ and they lived at the bottom of a well.</p>
 <p class="story">...</p>
 """
 
+#This will test code in the bs4 package declaration (the __init__ file in the folder bs4)
+soup = BeautifulSoup(html_doc, 'html.parser')
+soup.find_all('a')
 
+########################
+# Below is code for how to use the constructors for classes defined inside the element.py file
+
+#this code never runs, specifically to test that Coverage reports correctly here
+if (False):
+	print("absc")
 
 # a new page element, this class contains _find_all and attributeChecker
 pe = el.PageElement()
@@ -56,8 +65,6 @@ print(ac2(tag3)) #False
 # I haven't found a way to call that func directly, in a sane way, yet.
 tag1.find_all("test_string_2") 
 
-
-soup = BeautifulSoup(html_doc, 'html.parser')
 
 #print(soup.find(class = 'sister'))
 #print(soup.find(id = 'link1'))
