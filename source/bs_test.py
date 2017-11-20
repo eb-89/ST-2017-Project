@@ -1,5 +1,19 @@
+### FILE FOR TESTING BEAUTIFUL SOUP
+
+##  Put this in the BeautifulSoup top level folder, to import bs4 properly, if you installed BS,
+## you will import the installed bs4, in which case Coverage doesn't test the files. If you specify Coverage
+## to test installed python packages, it will test ALL python files that run. This gives an enormous list
+## which is probably not what you want.
+
+
 from bs4 import BeautifulSoup
 import bs4.element as el
+
+#Use this if you if you just have the element file
+# calling the soup constructor will of course not work with only the elements file, but (hopefully)
+# all element function calls work
+
+#import element as el
 
 #The html file
 html_doc = """
