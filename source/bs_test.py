@@ -1,19 +1,5 @@
-### FILE FOR TESTING BEAUTIFUL SOUP
-
-##  Put this in the BeautifulSoup top level folder, to import bs4 properly, if you installed BS,
-## you will import the installed bs4, in which case Coverage doesn't test the files. If you specify Coverage
-## to test installed python packages, it will test ALL python files that run. This gives an enormous list
-## which is probably not what you want.
-
-
 from bs4 import BeautifulSoup
 import bs4.element as el
-
-#Use this if you if you just have the element file
-# calling the soup constructor will of course not work with only the elements file, but (hopefully)
-# all element function calls work
-
-#import element as el
 
 #The html file
 html_doc = """
@@ -56,11 +42,11 @@ tag1 = el.Tag(pe, attrs = (("a", "valueofa"), ("b", "valueofb")), name="name1")
 tag2 = el.Tag(pe, attrs = ({"notA": "valueofnotA", "notB": "valueofnotB"}), name="name2")
 tag3 = el.Tag(pe, attrs = ({"notA": "valueofnotA"}), name="name2")
 
-
-print(pe.format_string("test_string_0"))
+#for some reason this doesnt work with BS from GitHub, but only the one from pip?
+#print(pe.format_string("test_string_0"))
 
  #format_sting always runs with this attr.
-print(pe.format_string( "test_string_0", formatter="minimal"))
+#print(pe.format_string( "test_string_0", formatter="minimal"))
 
 
 # _attribute_checker returns a lambda function (https://en.wikipedia.org/wiki/Anonymous_function)

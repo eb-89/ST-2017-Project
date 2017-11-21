@@ -1,21 +1,9 @@
-###THIS IS NOT MY CODE, THIS IS PART OF THE BeautifulSoup PROJECT AND IS COPIED VERBATIM,
-## AS PART OF A UNIVERSITY TESTING PROJECT.
-## ALL CREDIT GOES TO THE ORIGINAL AUTHOR.
-
-
 from pdb import set_trace
 import collections
 import re
 import sys
 import warnings
 from bs4.dammit import EntitySubstitution
-
-
-# Fil: element.py, klass: PageElement
-# funktioner for white box: attribute_checker och _find_all
-
-#def func(string):
-#    return string
 
 DEFAULT_OUTPUT_ENCODING = "utf-8"
 PY3K = (sys.version_info[0] > 2)
@@ -54,6 +42,7 @@ class AttributeValueWithCharsetSubstitution(unicode):
 
 class CharsetMetaAttributeValue(AttributeValueWithCharsetSubstitution):
     """A generic stand-in for the value of a meta tag's 'charset' attribute.
+
     When Beautiful Soup parses the markup '<meta charset="utf8">', the
     value of the 'charset' attribute will be one of these objects.
     """
@@ -69,8 +58,10 @@ class CharsetMetaAttributeValue(AttributeValueWithCharsetSubstitution):
 
 class ContentMetaAttributeValue(AttributeValueWithCharsetSubstitution):
     """A generic stand-in for the value of a meta tag's 'content' attribute.
+
     When Beautiful Soup parses the markup:
      <meta http-equiv="content-type" content="text/html; charset=utf8">
+
     The value of the 'content' attribute will be one of these objects.
     """
 
@@ -94,8 +85,10 @@ class ContentMetaAttributeValue(AttributeValueWithCharsetSubstitution):
 class HTMLAwareEntitySubstitution(EntitySubstitution):
 
     """Entity substitution rules that are aware of some HTML quirks.
+
     Specifically, the contents of <script> and <style> tags should not
     undergo entity substitution.
+
     Incoming NavigableString objects are checked to see if they're the
     direct children of a <script> or <style> tag.
     """
@@ -171,6 +164,7 @@ class PageElement(object):
     @property
     def _is_xml(self):
         """Is this element part of an XML tree or an HTML tree?
+
         This is used when mapping a formatter name ("minimal") to an
         appropriate function (one that performs entity-substitution on
         the contents of <script> and <style> tags, or not). It's
@@ -369,6 +363,7 @@ class PageElement(object):
 
     def insert_before(self, predecessor):
         """Makes the given element the immediate predecessor of this one.
+
         The two elements will have the same parent, and the given element
         will be immediately before this one.
         """
@@ -387,6 +382,7 @@ class PageElement(object):
 
     def insert_after(self, successor):
         """Makes the given element the immediate successor of this one.
+
         The two elements will have the same parent, and the given element
         will be immediately after this one.
         """
@@ -596,6 +592,7 @@ class PageElement(object):
 
     def _attr_value_as_string(self, value, default=None):
         """Force an attribute value into a string representation.
+
         A multi-valued attribute will be converted into a
         space-separated stirng.
         """
@@ -614,6 +611,7 @@ class PageElement(object):
 
     def _attribute_checker(self, operator, attribute, value=''):
         """Create a function that performs a CSS selector operation.
+
         Takes an operator, attribute and optional value. Returns a
         function that will return True for elements that match that
         combination.
@@ -677,6 +675,7 @@ class NavigableString(unicode, PageElement):
 
     def __new__(cls, value):
         """Create a new NavigableString.
+
         When unpickling a NavigableString, this method is called with
         the string in DEFAULT_OUTPUT_ENCODING. That encoding needs to be
         passed in to the superclass's __new__ or the superclass won't know
@@ -723,6 +722,7 @@ class NavigableString(unicode, PageElement):
 
 class PreformattedString(NavigableString):
     """A NavigableString not subject to the normal formatting rules.
+
     The string will be passed into the formatter (to trigger side effects),
     but the return value will be ignored.
     """
@@ -830,12 +830,15 @@ class Tag(PageElement):
     @property
     def is_empty_element(self):
         """Is this tag an empty-element tag? (aka a self-closing tag)
+
         A tag that has contents is never an empty-element tag.
+
         A tag that has no contents may or may not be an empty-element
         tag. It depends on the builder used to create the tag. If the
         builder has a designated list of empty-element tags, then only
         a tag whose name shows up in that list is considered an
         empty-element tag.
+
         If the builder has no designated list of empty-element tags,
         then any tag with no contents is an empty-element tag.
         """
@@ -845,6 +848,7 @@ class Tag(PageElement):
     @property
     def string(self):
         """Convenience property to get the single string within this tag.
+
         :Return: If this tag has a single string child, return value
          is that string. If this tag has no children, or more than one
          child, return value is None. If this tag has one child tag,
@@ -865,6 +869,7 @@ class Tag(PageElement):
 
     def _all_strings(self, strip=False, types=(NavigableString, CData)):
         """Yield all strings of certain classes, possibly stripping them.
+
         By default, yields only NavigableString and CData objects. So
         no comments, processing instructions, etc.
         """
@@ -1057,6 +1062,7 @@ class Tag(PageElement):
                eventual_encoding=DEFAULT_OUTPUT_ENCODING,
                formatter="minimal"):
         """Returns a Unicode representation of this tag and its contents.
+
         :param eventual_encoding: The tag is destined to be
            encoded into this encoding. This method is _not_
            responsible for performing that encoding. This information
@@ -1155,14 +1161,17 @@ class Tag(PageElement):
                        eventual_encoding=DEFAULT_OUTPUT_ENCODING,
                        formatter="minimal"):
         """Renders the contents of this tag as a Unicode string.
+
         :param indent_level: Each line of the rendering will be
            indented this many spaces.
+
         :param eventual_encoding: The tag is destined to be
            encoded into this encoding. This method is _not_
            responsible for performing that encoding. This information
            is passed in so that it can be substituted in if the
            document contains a <META> tag that mentions the document's
            encoding.
+
         :param formatter: The output formatter responsible for converting
            entities to Unicode characters.
         """
@@ -1194,9 +1203,12 @@ class Tag(PageElement):
         self, indent_level=None, encoding=DEFAULT_OUTPUT_ENCODING,
         formatter="minimal"):
         """Renders the contents of this tag as a bytestring.
+
         :param indent_level: Each line of the rendering will be
            indented this many spaces.
+
         :param eventual_encoding: The bytestring will be in this encoding.
+
         :param formatter: The output formatter responsible for converting
            entities to Unicode characters.
         """
@@ -1230,6 +1242,7 @@ class Tag(PageElement):
         """Extracts a list of Tag objects that match the given
         criteria.  You can specify the name of the Tag and any
         attributes you want the Tag to have.
+
         The value of a key-value pair in the 'attrs' map can be a
         string, a list of strings, a regular expression object, or a
         callable that takes a string and returns whether or not the
