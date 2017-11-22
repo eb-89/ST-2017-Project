@@ -3,7 +3,7 @@ Software testing project
 
 Files for Software Testing Project 2017, Uppsala University
 
-The files bs_test.py and bs_func.py are now legacy. You can open them if you want, but no code from these files are run during the tests. bs_func.py contains calls to some constructors defined in the elements.py module, and some calls to internal functions. 
+The files bs_test.py and bs_func.py are now legacy. You can open them if you want, but no code from these files are run during the tests. bs_test.py contains calls to some constructors defined in the elements.py module, and some calls to internal functions. 
 
 The file plan_for_test.txt contains a list of functionality planned for testing.
 
