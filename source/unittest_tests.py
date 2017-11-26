@@ -80,6 +80,12 @@ class TestBS(unittest.TestCase):
 		''', "html.parser")
 
 
+		cls.wrap_soup = BeautifulSoup(
+		'''
+		<p>Text to be wrapped</p>
+		''', "html.parser")
+
+
 
 		##Directly defined tags, to compare with BS output.
 
@@ -104,6 +110,9 @@ class TestBS(unittest.TestCase):
 		cls.p_tag_css = cls.soup.new_tag("p", **{'class':'my_CSS_class'})
 		cls.p_tag_css.string = "Here is my styled paragraph"
 
+		#wrapped tag
+		cls.p_tag_wrapped = BeautifulSoup("<tag><p>Text to be wrapped</p></tag>", "html.parser").tag
+
 	def test_find(self):
 		'''Find the first anchor tag, DOESN'T return a list '''
 		self.assertEqual(self.a_simple_soup.find("a"), self.a_tag)
@@ -120,6 +129,11 @@ class TestBS(unittest.TestCase):
 		self.assertEqual(self.css_select_soup.select('a[id="my_link"]'), [self.a_tag_id])
 		self.assertEqual(self.css_select_soup.select('#my_link'), [self.a_tag_id])
 		self.assertEqual(self.css_select_soup.select('a[id~="my_link"]'), [self.a_tag_id])
+
+	def test_wrap(self):
+		'''Return the wrapped tag'''
+		self.assertEqual(self.wrap_soup.p.wrap(self.soup.new_tag("tag")), self.p_tag_wrapped)
+
 
 if __name__ == '__main__':
 	unittest.main()
