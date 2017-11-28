@@ -30,7 +30,7 @@ class TestBS(unittest.TestCase):
 
 		#Directly defined soups.
 		cls.a_simple_soup = BeautifulSoup(
-		'''
+                '''
 		<html>
 			<head>
 			</head>
@@ -44,7 +44,7 @@ class TestBS(unittest.TestCase):
 			<hr>
 		</body>
 		</html>
-		''', "html.parser")
+                ''', "html.parser")
 
 		cls.a_nested_soup = BeautifulSoup(
 		'''
@@ -117,10 +117,17 @@ class TestBS(unittest.TestCase):
 		'''Find the first anchor tag, DOESN'T return a list '''
 		self.assertEqual(self.a_simple_soup.find("a"), self.a_tag)
 		self.assertEqual(self.a_nested_soup.find("a"), self.a_tag_first)
+
+        def test_find_fail(self):
+                self.assertEqual(self.a_nested_soup.find("b"), None)
 		
 	def test_find_all(self):
 		'''Find all tags, returns a list'''
 		self.assertEqual(self.a_nested_soup.find_all("a"), [self.a_tag_first,self.a_tag_second,self.a_tag_third])
+
+        def test_find_all_not_found(self):
+                '''Search for non-existing tags'''
+                self.assertEqual(self.a_nested_soup.find_all("b"), []) 
 
 	def test_css_select(self):
 		'''Find tags based on CSS selectors, returns a list'''
@@ -134,6 +141,15 @@ class TestBS(unittest.TestCase):
 		'''Return the wrapped tag'''
 		self.assertEqual(self.wrap_soup.p.wrap(self.soup.new_tag("tag")), self.p_tag_wrapped)
 
+        def test_find_next(self):
+                '''Find the next anchor tag'''
+                self.first_link = self.a_nested_soup.a
+                self.second_link = self.first_link.find_next()
+                self.third_link = self.second_link.find_next()
+                self.assertEqual(self.a_nested_soup.a, self.a_tag_first)
+                self.assertEqual(self.first_link.find_next(), self.a_tag_second)
+                self.assertEqual(self.second_link.find_next(), self.a_tag_third)
+                self.assertEqual(self.third_link.find_next(), None)
 
 if __name__ == '__main__':
 	unittest.main()

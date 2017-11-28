@@ -1,5 +1,9 @@
-Whitebox:
+Uppsala universitet
+Software testing HT17
 
+(* markerar att test finns skrivna för den funktionen)
+
+WHITEBOX 
 
 ANTINGEN:
 find()   ##skitläskig
@@ -10,14 +14,12 @@ _attribute_checker  ## if branches
 descendents()   ##Loop
 
 
+BLACKBOX
 
-blackbox:
-navigation:
-
+--navigation--
 soup.head
 soup.title
 soup.body.diverse   # går ut på att zooma i trädet
-find_all()  # Både black o white???
 title_tags.contents
 .CONTENTS
 .children
@@ -28,14 +30,18 @@ title_tags.contents
 .parent
 .parents
 
+--search--
+*find()
+*find_all()  # Både black o white???
 find_parents()
 find_parent()
 find_all_next()
-find_next()
+*find_next()
 find_all_previous()
 find_previous()
-select()
+*select()
 
+--insert/delete/edit--
 append()
 insert_before()
 insert_after()
@@ -43,7 +49,5 @@ clear()
 extract()
 decompose()
 replace_with()
-wrap()
+*wrap()
 unwrap()
-
-##kanske output??
