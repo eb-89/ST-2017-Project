@@ -142,7 +142,7 @@ class TestBS(unittest.TestCase):
 		self.assertEqual(self.wrap_soup.p.wrap(self.soup.new_tag("tag")), self.p_tag_wrapped)
 
         def test_find_next(self):
-                '''Find the next anchor tag'''
+                '''Use find_next to find the next anchor tag, until there are no more'''
                 self.first_link = self.a_nested_soup.a
                 self.second_link = self.first_link.find_next()
                 self.third_link = self.second_link.find_next()
@@ -150,6 +150,14 @@ class TestBS(unittest.TestCase):
                 self.assertEqual(self.first_link.find_next(), self.a_tag_second)
                 self.assertEqual(self.second_link.find_next(), self.a_tag_third)
                 self.assertEqual(self.third_link.find_next(), None)
+
+        def test_find_all_next(self):
+                '''Find all following tags using two differente usages of find_all_next'''
+                self.next_tags = [self.a_tag_second, self.a_tag_third]
+                self.first_link = self.a_nested_soup.a
+                self.assertEqual(self.first_link.find_all_next(), self.next_tags)
+                self.assertEqual(self.first_link.find_all_next("a"), self.next_tags)
+                self.assertEqual(self.first_link.find_all_next("b"), [])
 
 if __name__ == '__main__':
 	unittest.main()
