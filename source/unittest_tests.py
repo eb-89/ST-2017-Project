@@ -323,6 +323,33 @@ class TestBS(unittest.TestCase):
                 with self.assertRaises(TypeError):
                         extr_arg_soup_extracted = extr_arg_soup.extract("asd")
 
+        def test_decompose(self):
+                ''' Test the decompose function by removing and destroying a tag. '''
+                markup = '<a href="http://example.com/">I linked to <i>example.com</i></a>'
+                markup_decomposed = '<a href="http://example.com/">I linked to </a>'
+                dec_soup = BeautifulSoup(markup, "html.parser")
+                a_tag = dec_soup.a
+                dec_soup.i.decompose()
+                self.assertEqual(str(a_tag), markup_decomposed)
+
+        def test_decompose_empty(self):
+                ''' Test the decompose function by removing an empty tag. '''
+                markup = '<a href="http://example.com/">I linked to <i></i></a>'
+                markup_decomposed = '<a href="http://example.com/">I linked to </a>'
+                dec_soup = BeautifulSoup(markup, "html.parser")
+                a_tag = dec_soup.a
+                dec_soup.i.decompose()
+                self.assertEqual(str(a_tag), markup_decomposed)
+
+        def test_decmpose_arg(self):
+                ''' Test the decompose function by calling decompose with arg. '''
+                markup = '<a href="http://example.com/">I linked to <i> test </i></a>'
+                markup_decomposed = '<a href="http://example.com/">I linked to </a>'
+                dec_soup = BeautifulSoup(markup, "html.parser")
+                a_tag = dec_soup.a
+                with self.assertRaises(TypeError):
+                        dec_soup.i.decompose("testArg")
+
 if __name__ == '__main__':
 	unittest.main()
 
