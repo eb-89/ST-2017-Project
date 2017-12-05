@@ -239,17 +239,37 @@ class TestBS(unittest.TestCase):
                 insert_before_soup.b.string.insert_before(insert_before_tag)
                 self.assertEqual(insert_before_soup.b.contents, insert_before_soup_with_tag.b.contents)
 
-                ''' Insert_before() test with an empty argyment '''
+                ''' Insert_before() test with an empty argument. '''
                 insert_before_soup2 = BeautifulSoup("<b>tester soup</b>", "html.parser")
                 inserted_before_soup = BeautifulSoup("<b>tester soup</b>", "html.parser")
                 insert_before_soup2.b.insert_before("")
                 self.assertEqual(insert_before_soup2.b.contents[0].string, inserted_before_soup.b.contents[0].string)
 
         def test_insert_before_raise(self):
-                ''' Insert_before() without argument test'''
+                ''' Insert_before() without argument test.'''
                 insert_before_raise_soup = BeautifulSoup("<b>testing soup</b>", "html.parser")
                 with self.assertRaises(TypeError):
                         insert_before_raise_soup.insert_before()
+
+        def test_insert_after(self):
+                ''' Insert_after() test with an <i>stop</i> tag. '''
+                insert_after_soup_with_tag = BeautifulSoup("<b>Don't<i>stop</i></b>", "html.parser")
+                insert_after_soup = BeautifulSoup("<b>Don't</b>", "html.parser")
+                insert_after_tag = insert_after_soup.new_tag("i")
+                insert_after_tag.string = "stop"
+                insert_after_soup.b.string.insert_after(insert_after_tag)
+                self.assertEqual(insert_after_soup.b.contents, insert_after_soup_with_tag.b.contents)
+
+                ''' Insert_after() test with an emtpy argument. '''
+                insert_after_soup2 = BeautifulSoup("<b>test insert_after soup</b>", "html.parser")
+                inserted_after_soup = BeautifulSoup("<b>test insert_after soup</b>", "html.parser")
+                insert_after_soup2.b.insert_after("")
+                self.assertEqual(insert_after_soup2.b.contents[0].string, inserted_after_soup.b.contents[0].string)
+
+                ''' Insert_after () test with no argument, to raise exception. '''
+                insert_after_raise_soup = BeautifulSoup("<b>raise test soup</b>", "html.parser")
+                with self.assertRaises(TypeError):
+                        insert_after_raise_soup.insert_after()
 
 if __name__ == '__main__':
 	unittest.main()

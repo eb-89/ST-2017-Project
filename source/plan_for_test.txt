@@ -44,7 +44,7 @@ title_tags.contents
 --insert/delete/edit--
 *append()
 *insert_before()
-insert_after()
+*insert_after()
 clear()
 extract()
 decompose()
