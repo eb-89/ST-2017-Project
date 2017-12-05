@@ -230,6 +230,27 @@ class TestBS(unittest.TestCase):
                 with self.assertRaises(TypeError):
                         append_raise_soup.a.append()
 
+        def test_insert_before(self):
+                ''' Insert_before() test with an <i>Don't</i> tag '''
+                insert_before_soup_with_tag = BeautifulSoup("<b><i>Don't</i>stop</b>", "html.parser")
+                insert_before_soup = BeautifulSoup("<b>stop</b>", "html.parser")
+                insert_before_tag = insert_before_soup.new_tag("i")
+                insert_before_tag.string = "Don't"
+                insert_before_soup.b.string.insert_before(insert_before_tag)
+                self.assertEqual(insert_before_soup.b.contents, insert_before_soup_with_tag.b.contents)
+
+                ''' Insert_before() test with an empty argyment '''
+                insert_before_soup2 = BeautifulSoup("<b>tester soup</b>", "html.parser")
+                inserted_before_soup = BeautifulSoup("<b>tester soup</b>", "html.parser")
+                insert_before_soup2.b.insert_before("")
+                self.assertEqual(insert_before_soup2.b.contents[0].string, inserted_before_soup.b.contents[0].string)
+
+        def test_insert_before_raise(self):
+                ''' Insert_before() without argument test'''
+                insert_before_raise_soup = BeautifulSoup("<b>testing soup</b>", "html.parser")
+                with self.assertRaises(TypeError):
+                        insert_before_raise_soup.insert_before()
+
 if __name__ == '__main__':
 	unittest.main()
 
