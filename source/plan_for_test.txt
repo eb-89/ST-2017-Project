@@ -42,7 +42,7 @@ title_tags.contents
 *select()
 
 --insert/delete/edit--
-append()
+*append()
 insert_before()
 insert_after()
 clear()
