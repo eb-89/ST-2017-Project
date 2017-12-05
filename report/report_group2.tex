@@ -15,6 +15,37 @@ Here is some text that will not be in the report \\
 As for the parser, BeatifulSoup supports the HTML parser included in the Python standard library, but the user can also easily install and use external parsers. The documentation notes that BeatifulSoup provides the same interface using different parsers, but if HTML or XML is compared, or if the provided HTML is incorrect, the resulting parse trees will be different depending on the selected parser.
 \end{Description of BeautifulSoup4}
 
+\begin{BeautifulSoup4 Examples}
+Here we will illustrate how BeautifulSoup represents the parse tree using a basic HTML example. The HTML code is defined as follows:
+
+Using the following example HTML file:
+html_doc """
+<html>
+<head>
+<title>The Title of the webpage</title>
+</head>
+
+<body>
+<p class="title"><b>The title of the page</b></p>
+<p class="story">The information on the page 
+<a href="http://example.com" id="link1">Example link</a> and 
+<a href="http://example2.com" id="linke">Example link 2</a> etc.</p>
+</p>
+"""
+
+To start the first task is to generate the soup-object which all other functionalities of the library depend on. Using the above example defined as html_doc, the initial command is as follows:
+soup = BeautifulSoup(html_doc, 'html.parser')
+The function to Beautifulsoup takes two arguments, the first argument is the markup to be parsed, and the second defines which type of parser to be used. The return value is the generated soup-object.
+
+After the soup object is generated there are several ways of traversing the parse tree and manipulating it. For example using soup.title, soup.title.name and soup.title.string you can access the title tag, the name of the tag and the contained string. The library also provides function, for example to get the two a-tags containd you could call soup.find_all('a') which then returns:
+'<a href="http://example.com" id="link1">Example link</a>, '<a href="http://example.com'' id="link2">'
+To retreive all text contained the function call soup.get_text() will return just that.
+To use different parsers the user simply calls the constructor function BeautifulSoup() with different arguments, for example BeautifulSoup(xml_file, 'lxml') to use the lxml-parser, or BeautifulSoup(html_doc, 'html5lib') to use the html5lib-parser (this ofcourse assumes that the respective parser is already installed on the local system, easily done through pip, apt-get or similar).
+
+Overall the BeautifulSoup library only provides four different kinds of objects. Those are Tag, NavigableString, BeutifulSoup and Comment. The Tag object corresponds to a HTML or XML tag from the origial code. The NavigableString corresponds to text from within a tag, it is similar to a Python Unicode String but with navigational support regarding the parse tree (using the function unicode() they can easily be converted to regular python strings). The BeautifulSoup object is the representation of the whole document, providing the same navigational functionality of the parse tree as the Tag object. The Comment object represents comments from the markup language. There are also some special cases of defined classes which represents specifics from XML documents, these are however just implemented as subclasses of the NavigableString object type with relevant added functionality. 
+
+\end{BeautifulSoup4 Examples}
+
 lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
 
 
