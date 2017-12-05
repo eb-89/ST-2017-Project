@@ -381,6 +381,30 @@ class TestBS(unittest.TestCase):
                 with self.assertRaises(AttributeError):
                         a_tag.i.replace_with()
 
+        def test_unwrap(self):
+                ''' Test unrwap() function.'''
+                markup = '<a href="http://example.com/">I linked to <i>example.com</i></a>'
+                unwrapped_markup = '<a href="http://example.com/">I linked to example.com</a>'
+                unwrap_soup = BeautifulSoup(markup, "html.parser")
+                a_tag = unwrap_soup.a
+                a_tag.i.unwrap()
+                self.assertEqual(str(a_tag), unwrapped_markup)
+
+        def test_unwrap(self):
+                ''' Test unwrap() with arg. '''
+                markup = '<a href="http://example.com/">I linked to <i>example.com</i></a>'
+                unwrap_soup = BeautifulSoup(markup, "html.parser")
+                a_tag = unwrap_soup.a
+                with self.assertRaises(TypeError):
+                        a_tag.i.unwrap("a")
+
+        def test_unwrap_no_tag(self):
+                ''' Test unwrap() on non-exisiting tag. '''
+                markup = 'htadsasdtp/example.codssdd'
+                unwrap_soup = BeautifulSoup(markup, "html.parser")
+                with self.assertRaises(ValueError):
+                        unwrap_soup.unwrap()
+
 if __name__ == '__main__':
 	unittest.main()
 
