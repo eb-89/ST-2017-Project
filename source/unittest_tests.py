@@ -297,6 +297,32 @@ class TestBS(unittest.TestCase):
                 raise_clear_tag.clear("asdasda")
                 self.assertEqual(str(raise_clear_tag), raise_clear_empty_markup)
 
+        def test_extract(self):
+                ''' Extract a tag and see if it is correctly returned, and that the original is changed accordingly '''
+                markup = '<a href="http://example.com/">I linked to <i>example.com</i></a>'
+                a_tag_markup = '<a href="http://example.com/">I linked to </a>'
+                extracted_tag_markup = '<i>example.com</i>'
+                extract_soup = BeautifulSoup(markup, "html.parser")
+                #a_tag = extract_soup.a  (not sure why I left this here)
+                extracted_tag = extract_soup.i.extract()
+                self.assertEqual(extracted_tag.parent, None)
+                self.assertEqual(str(extracted_tag), extracted_tag_markup)
+                self.assertEqual(str(extract_soup), a_tag_markup)
+
+        def test_extract_raises(self):
+                ''' Test extracting a non-existing tag, ensuring that the original isn't changed. '''
+                markup = '<a href="http://example.com/">I linked to <i>example.com</i></a>'
+                extr_raise_soup = BeautifulSoup(markup, "html.parser")
+                extr_raise_soup_extracted = extr_raise_soup.extract()
+                self.assertEqual(str(extr_raise_soup_extracted), markup)
+
+        def test_extract_with_arg(self):
+                ''' Test extracting by calling extract() with a random argument. '''
+                markup = '<a href="http://example.com/">I linked to <i>example.com</i></a>'
+                extr_arg_soup = BeautifulSoup(markup, "html.parser")
+                with self.assertRaises(TypeError):
+                        extr_arg_soup_extracted = extr_arg_soup.extract("asd")
+
 if __name__ == '__main__':
 	unittest.main()
 

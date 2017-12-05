@@ -46,7 +46,7 @@ title_tags.contents
 *insert_before()
 *insert_after()
 *clear()
-extract()
+*extract()
 decompose()
 replace_with()
 *wrap()
