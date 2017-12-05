@@ -97,6 +97,12 @@ class TestBS(unittest.TestCase):
 
 		##Directly defined tags, to compare with BS output.
 
+                #a generic anchor tag for append testing
+                cls.an_append_tag = cls.soup.new_tag("a")
+                cls.an_append_tag.string = "Foo"
+                cls.an_appended_tag = cls.soup.new_tag("a")
+                cls.an_appended_tag.string = "FooBar"
+
 		#a generic anchor tag
 		cls.a_tag = cls.soup.new_tag("a") 
 		cls.a_tag.string = "An anchor tag"
@@ -122,7 +128,7 @@ class TestBS(unittest.TestCase):
 		cls.p_tag_wrapped = BeautifulSoup("<tag><p>Text to be wrapped</p></tag>", "html.parser").tag
 
 		#tag with no name
-		cls.no_name_tag = cls.soup.new_tag("") 
+		cls.no_name_tag = cls.soup.new_tag("")
 
 	def test_no_name_tag(self):
 		self.assertEqual(self.no_name_tag.name, "")
@@ -196,6 +202,33 @@ class TestBS(unittest.TestCase):
 		self.assertEqual(self.a_nested_soup.a.find_parents("p"), [p_lvl4, p_lvl3, p_lvl2, p_lvl1])
 		self.assertEqual(self.a_nested_soup.p.find_parents("body"), [self.a_nested_soup.body])
 
+        def test_append(self):
+                ''' Test the append function by appending an <a>Bar</a> tag'''
+                append_soup = BeautifulSoup("<a>Foo</a>", "html.parser")
+                appended_soup = BeautifulSoup("<a>Foo</a><a>Bar</a>", "html.parser")
+                append_soup.a.append("Bar")
+                self.assertEqual(append_soup.a.contents[0].string, appended_soup.a.contents[0].string)
+
+                ''' Test the append function by appending without value '''
+                append_soup2 = BeautifulSoup("<a>Foo</a>", "html.parser")
+                appended_soup2 = BeautifulSoup("<a>Foo</a>", "html.parser")
+                append_soup2.a.append("")
+                self.assertEqual(append_soup2.a.contents[0].string, appended_soup2.a.contents[0].string)
+
+                ''' Calling append without argument should raise an error. '''
+                append_soup3 = BeautifulSoup("<a>Foo</a>", "html.parser")
+                appended_soup3 = BeautifulSoup("<a>Foo</a>", "html.parser")
+                try:
+                        append_soup3.a.append()
+                        self.assertEqual(append_soup3.a.contents[0].string, appended_soup3.a.contents[0].string)
+                except:
+                        True
+
+        def test_append_raise(self):
+                ''' Assert that append without argument raises a TypeError due to too few arguments '''
+                append_raise_soup = BeautifulSoup("<a>Foo</a>", "html.parser")
+                with self.assertRaises(TypeError):
+                        append_raise_soup.a.append()
 
 if __name__ == '__main__':
 	unittest.main()
