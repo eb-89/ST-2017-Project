@@ -271,6 +271,32 @@ class TestBS(unittest.TestCase):
                 with self.assertRaises(TypeError):
                         insert_after_raise_soup.insert_after()
 
+        def test_clear(self):
+                ''' Clear the contents of a HTML <a href> tag. '''
+                markup = '<a href="http://example.com/">I linked to <i>example.com</i></a>'
+                cleared_markup = '<a href="http://example.com/"></a>'
+                clear_soup = BeautifulSoup(markup, "html.parser")
+                clear_tag = clear_soup.a
+                clear_tag.clear()
+                self.assertEqual(str(clear_tag), cleared_markup)
+
+        def test_clear_empty(self):
+                ''' Clear the contents of an empty HTML <a href> tag. '''
+                empty_tag_markup = '<a href="http://example.com/"></a>'
+                clear_empty_soup = BeautifulSoup(empty_tag_markup, "html.parser")
+                clear_empty_tag = clear_empty_soup.a
+                clear_empty_tag.clear()
+                self.assertEqual(str(clear_empty_tag), empty_tag_markup)
+
+        def test_clear_with_arg(self):
+                ''' Call clear with argument, works just as clear(). '''
+                raise_clear_markup = '<a href="http://example.com/">A test tag <i>example.com</i></a>'
+                raise_clear_empty_markup = '<a href="http://example.com/"></a>'
+                raise_clear_soup = BeautifulSoup(raise_clear_markup, "html.parser")
+                raise_clear_tag = raise_clear_soup.a
+                raise_clear_tag.clear("asdasda")
+                self.assertEqual(str(raise_clear_tag), raise_clear_empty_markup)
+
 if __name__ == '__main__':
 	unittest.main()
 
