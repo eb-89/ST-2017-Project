@@ -350,6 +350,37 @@ class TestBS(unittest.TestCase):
                 with self.assertRaises(TypeError):
                         dec_soup.i.decompose("testArg")
 
+        def test_replace_with(self):
+                ''' Test the replace with function '''
+                markup = '<a href="http://example.com/">I linked to <i>example.com</i></a>'
+                rep_markup = '<a href="http://example.com/">I linked to <b>new_example.com</b></a>'
+                rep_soup = BeautifulSoup(markup, "html.parser")
+                a_tag = rep_soup.a
+                new_tag = rep_soup.new_tag("b")
+                new_tag.string = "new_example.com"
+                a_tag.i.replace_with(new_tag)
+                self.assertEqual(str(a_tag), rep_markup)
+
+        def test_replace_with_incorrect_tag(self):
+                '''
+                Test replace with erroneous arg. This works and shows that it is up to the user
+                to ensure correct usage and not create incorrect HTML
+                '''
+                markup = '<a href="http://example.com/">I linked to <i>example.com</i></a>'
+                rep_markup = '<a href="http://example.com/">I linked to testText</a>'
+                arg_soup = BeautifulSoup(markup, "html.parser")
+                a_tag = arg_soup.a
+                a_tag.i.replace_with("testText")
+                self.assertEqual(str(a_tag), rep_markup)
+
+        def test_replace_with_no_tag(self):
+                ''' Test replcae_with() called without argument. '''
+                markup = '<a href="http://example.com/"I linked to <i>example.com</i></a>'
+                no_soup = BeautifulSoup(markup, "html.parser")
+                a_tag = no_soup.a
+                with self.assertRaises(AttributeError):
+                        a_tag.i.replace_with()
+
 if __name__ == '__main__':
 	unittest.main()
 

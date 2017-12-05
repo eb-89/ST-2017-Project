@@ -48,6 +48,6 @@ title_tags.contents
 *clear()
 *extract()
 *decompose()
-replace_with()
+*replace_with()
 *wrap()
 unwrap()
