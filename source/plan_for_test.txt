@@ -13,6 +13,7 @@ ELLER:
 _attribute_checker  ## if branches
 descendents()   ##Loop
 
+22 tests in total
 
 BLACKBOX
 
