@@ -24,8 +24,8 @@ title_tags.contents
 .CONTENTS
 .children
 .descendants
-.string
-.strings
+*.string
+*.strings
 .stripped_strings
 .parent
 .parents
@@ -51,3 +51,4 @@ title_tags.contents
 *replace_with()
 *wrap()
 *unwrap()
+	

@@ -434,7 +434,45 @@ class TestBS(unittest.TestCase):
                 markup = '<html><head>asd</head><body>dsa</body></html>'
                 title_soup = BeautifulSoup(markup, "html.parser")
                 self.assertEqual(title_soup.title, None)
-                
+
+        def test_soup_string(self):
+                ''' Test soup constructor for string tag '''
+                markup = '<a>A tag string</a>'
+                string = 'A tag string'
+                string_soup = BeautifulSoup(markup, "html.parser")
+                self.assertEqual(string_soup.a.string, string)
+
+        def test_soup_stringless(self):
+                ''' Test soup constructor for nonexisting string '''
+                markup = "<a></a>"
+                stringless_soup = BeautifulSoup(markup, "html.parser")
+                self.assertEqual(stringless_soup.a.string, None)
+
+        def test_soup_strings(self):
+                ''' Test soup constructor for strings '''
+                markup = '<html><head>String0</head><body>String1</body>String2</html>'
+                string0 = 'String0'
+                string1 = 'String1'
+                string2 = 'String2'
+                strings_soup = BeautifulSoup(markup, "html.parser")
+                strings = []
+                for string in strings_soup.strings:
+                        strings.append(string)
+                self.assertEqual(strings[0], string0)
+                self.assertEqual(strings[1], string1)
+                self.assertEqual(strings[2], string2)
+                with self.assertRaises(IndexError):
+                        strings[3]
+
+        def test_soup_no_strings(self):
+                '''Test soup constructor for strings without strings'''
+                markup = '<html><head></head><body></body></html>'
+                no_strings_soup = BeautifulSoup(markup, "html.parser")
+                strings = []
+                for string in no_strings_soup.strings:
+                        strings.append(string)
+                self.assertEqual(strings, [])
+
 if __name__ == '__main__':
 	unittest.main()
 
