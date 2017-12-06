@@ -405,6 +405,36 @@ class TestBS(unittest.TestCase):
                 with self.assertRaises(ValueError):
                         unwrap_soup.unwrap()
 
+        def test_soup_head(self):
+                ''' Test soup constructor for head tag '''
+                markup = '<html><head>asd</head><body><p>hej</p></body></html>'
+                head_markup = '<head>asd</head>'
+                head_content_markup = "[u'asd']"
+                soup_head = BeautifulSoup(markup, "html.parser")
+                self.assertEqual(str(soup_head.head), head_markup)
+                self.assertEqual(str(soup_head.head.contents), head_content_markup)
+
+        def test_soup_headless(self):
+                '''' Test soup constructor without head tag '''
+                markup = '<html><body><p>asd</p></body></html>'
+                headless_soup = BeautifulSoup(markup, "html.parser")
+                self.assertEqual(headless_soup.head, None)
+
+        def test_soup_title(self):
+                ''' Test soup constructor for title tag '''
+                markup = '<html><head><title>A title</title></head><body></body></html>'
+                title_tag = '<title>A title</title>'
+                title_string = 'A title'
+                title_soup = BeautifulSoup(markup, "html.parser")
+                self.assertEqual(str(title_soup.title), title_tag)
+                self.assertEqual(str(title_soup.title.string), title_string)
+
+        def test_soup_titleless(self):
+                ''' Test soup constructor for nonexisting title tag '''
+                markup = '<html><head>asd</head><body>dsa</body></html>'
+                title_soup = BeautifulSoup(markup, "html.parser")
+                self.assertEqual(title_soup.title, None)
+                
 if __name__ == '__main__':
 	unittest.main()
 

@@ -17,8 +17,8 @@ descendents()   ##Loop
 BLACKBOX
 
 --navigation--
-soup.head
-soup.title
+*soup.head
+*soup.title
 soup.body.diverse   # går ut på att zooma i trädet
 title_tags.contents
 .CONTENTS
