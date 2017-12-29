@@ -1,25 +1,6 @@
 import unittest
 from bs4 import BeautifulSoup
 
-#import bs4.element as el
-
-##Not necessary
-#pe = el.PageElement()
-#pe.setup()
-
-#Creates two tags using BS, note that im using BS tags to test BS tags.
-#Maybe change this?
-#tag1 = el.Tag(attrs = (({"id": "first_hr"})), name="hr")
-#tag2 = el.Tag(attrs = (({"id": "second_hr"})), name="hr")
-
-
-#find_all_previous()
-#find_previous()
-
-#find_parents()
-#find_parent()
-
-#a_tag = el.Tag(name ="bla") 
 
 
 class TestBS(unittest.TestCase):
@@ -213,7 +194,7 @@ class TestBS(unittest.TestCase):
                 append_soup2 = BeautifulSoup("<a>Foo</a>", "html.parser")
                 appended_soup2 = BeautifulSoup("<a>Foo</a>", "html.parser")
                 append_soup2.a.append("")
-                self.assertEqual(append_soup2.a.contents[0].string, appended_soup2.a.contents[0].string)
+                self.assertEqual(append_soup2.a.contents[0], appended_soup2.a.contents[0])
 
                 ''' Calling append without argument should raise an error. '''
                 append_soup3 = BeautifulSoup("<a>Foo</a>", "html.parser")
@@ -409,10 +390,10 @@ class TestBS(unittest.TestCase):
                 ''' Test soup constructor for head tag '''
                 markup = '<html><head>asd</head><body><p>hej</p></body></html>'
                 head_markup = '<head>asd</head>'
-                head_content_markup = "[u'asd']"
+                head_content_markup = [u'asd']
                 soup_head = BeautifulSoup(markup, "html.parser")
                 self.assertEqual(str(soup_head.head), head_markup)
-                self.assertEqual(str(soup_head.head.contents), head_content_markup)
+                self.assertEqual(soup_head.head.contents, head_content_markup)
 
         def test_soup_headless(self):
                 '''' Test soup constructor without head tag '''
@@ -428,6 +409,104 @@ class TestBS(unittest.TestCase):
                 title_soup = BeautifulSoup(markup, "html.parser")
                 self.assertEqual(str(title_soup.title), title_tag)
                 self.assertEqual(str(title_soup.title.string), title_string)
+        
+        def test_soup_contents(self):
+                ''' The contents attribute returns the contents of a tag. A string should throw error on contents'''
+                markup = '<a><b>bold tag 1</b><b>bold tag 2</b></a>'
+                bt1 = '<b>bold tag 1</b>'
+                bt2 = '<b>bold tag 2</b>'
+                soup = BeautifulSoup(markup, "html.parser")
+
+                self.assertEqual([str(soup.a.contents[0]), str(soup.a.contents[1])] , [bt1,bt2])
+                self.assertEqual(soup.a.b.contents, [soup.a.b.string])
+
+                with self.assertRaises(AttributeError):
+                        self.assertEqual(soup.a.b.string.contents, 0) 
+        
+        def test_soup_children(self):
+                ''' The children attribute returns a generator, for iterating over children'''
+                markup = '<a><b>bold tag 1</b><b>bold tag 2</b></a>'
+                bt_list = ['<b>bold tag 1</b>', '<b>bold tag 2</b>']
+                soup = BeautifulSoup(markup, "html.parser")
+
+                index = 0
+                for c in soup.a.children:
+                         self.assertEqual(str(c), bt_list[index])
+                         index += 1
+
+
+        def test_soup_descendants(self):
+                ''' The descentants attribute returns the all descentants of a tag, including strings '''
+                markup = '<a><b>bold tag 1</b><b>bold tag 2</b></a>'
+                a1 = '<a><b>bold tag 1</b><b>bold tag 2</b></a>'
+                bt1 = '<b>bold tag 1</b>'
+                bt2 = '<b>bold tag 2</b>'
+                bt1_str = 'bold tag 1'
+                bt2_str = 'bold tag 2'
+
+                desc = [a1, bt1, bt1_str, bt2, bt2_str]
+
+                soup = BeautifulSoup(markup, "html.parser")
+
+                index = 0
+                for c in soup.descendants:
+                         self.assertEqual(str(c), desc[index])
+                         index += 1
+
+        def test_soup_stripped_strings(self):
+                ''' stripped_strings should remove whitespaces and linebreaks before and after strings '''
+                markup = '''<html><head>
+                             String0    
+                         </head><body>   String1  </body> String2
+                         </html>'''
+                string0 = 'String0'
+                string1 = 'String1'
+                string2 = 'String2'
+
+                strings_soup = BeautifulSoup(markup, "html.parser")
+                
+                strings = []
+                for string in strings_soup.stripped_strings:
+                        strings.append(string)
+
+                self.assertEqual(strings[0], string0)
+                self.assertEqual(strings[1], string1)
+                self.assertEqual(strings[2], string2)
+
+                with self.assertRaises(IndexError):
+                        strings[3]
+
+        def test_soup_parent(self):
+                '''parent attribute finds the direct parent. This applies to strings as well.
+                The parent of a soup is None'''
+                markup = '<a><b>bold tag 1</b><b>bold tag 2</b></a>'
+                soup = BeautifulSoup(markup, "html.parser")
+
+                self.assertEqual(soup.a.b.parent, soup.a)
+                self.assertEqual(soup.a.parent, soup)
+                self.assertEqual(soup.parent, None)
+
+                self.assertEqual(soup.a.b.string.parent, soup.a.b)
+
+
+        def test_soup_parents(self):
+                '''parents attribute finds all the parents '''
+                markup = '<a><b>bold tag 1</b><b>bold tag 2</b></a>'
+                soup = BeautifulSoup(markup, "html.parser")
+
+                par = ['<b>bold tag 1</b>', '<a><b>bold tag 1</b><b>bold tag 2</b></a>', '[document]']
+
+                ##Small irragularity here, parents does not go as high as None, although
+                ##the documentation states that it should.
+
+                index = 0
+                for c in soup.a.b.string.parents:
+                        if str(c.name) == '[document]':
+                                self.assertEqual(c.name, par[-1])
+                        else:
+                                self.assertEqual(str(c), par[index])
+                                index += 1
+
 
         def test_soup_titleless(self):
                 ''' Test soup constructor for nonexisting title tag '''
@@ -454,13 +533,17 @@ class TestBS(unittest.TestCase):
                 string0 = 'String0'
                 string1 = 'String1'
                 string2 = 'String2'
+
                 strings_soup = BeautifulSoup(markup, "html.parser")
+                
                 strings = []
                 for string in strings_soup.strings:
                         strings.append(string)
+
                 self.assertEqual(strings[0], string0)
                 self.assertEqual(strings[1], string1)
                 self.assertEqual(strings[2], string2)
+
                 with self.assertRaises(IndexError):
                         strings[3]
 

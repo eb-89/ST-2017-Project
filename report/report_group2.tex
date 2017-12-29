@@ -1,52 +1,179 @@
 \documentclass[10pt]{article}
 
+\usepackage{listings}
+\usepackage{courier}
+\usepackage{color}
+\usepackage{hyperref}
+
+
+\definecolor{orange}{rgb}{1,0.6,0.2}
+\definecolor{light-blue}{rgb}{0,0.6,1}
+\definecolor{dark-green}{rgb}{0.05,0.4,0}
+
+\lstdefinestyle{htmlstyle}{
+	language = html,
+	basicstyle=\small\ttfamily,
+	tagstyle=\color{blue}
+}
+
+
+\lstdefinestyle{pythonstyle}{
+	language = python,
+	basicstyle=\bf\small\ttfamily,
+	keywordstyle=\color{blue},
+	identifierstyle=\color{black},
+ 	stringstyle=\color{dark-green},
+ 	commentstyle=\color{light-blue},
+ 	morekeywords = {[2]@decorator},  %%Add decorators here, there is only one in the code so far.
+ 	keywordstyle={[2]\color{red}},
+ 	morestring=[s]{'''}{'''},
+ 	showstringspaces=false
+}
+
+
+
+
 \title{Testing BeautifulSoup - Report}
 
-\author{name1 \\ name2 \\ name3 \\ name4}
+\author{Erik Bertse \\ Sara Gustavsson \\ Moa Marklund \\ Henrik Thorsell}
 
 \begin{document}
 
 \maketitle
 
-Here is some text that will not be in the report \\
+\begin{abstract}
+	The BeautifulSoup library is a Python library designed to easily search and manipulate data associated with HTML/XML markup. In this project, we test the functionality of this library. Most of the available API functions have been subject to black-box testing. One of the functions was selected to undergo white-box testing. Our results are: Here will be the results.
+\end{abstract}
 
-\begin{Description of BeautifulSoup4}
- BeatifulSoup is a library for python which provides functionality to parse HTML and XML files. It provides functionality to search, modify and navigate through a parse tree which the library generats using parsers selected by the user. The library is according to the documentation working similary for both python versions 2.7 and 3.2, we have however limited the scope of our testing to version 2.7. There are previous (and unsupported) versions of BeautifulSoup available, we have limited the scope to the current version 4. The main function of the library generates a nested data structure called a 'soup', by using a parser in combination with the desired markup file. The composition of the object can be used to navigate the tree, as well as explicit functions for searching, traversing and editing the generated soup object. Using a simple loop and a search function a user can easily for example exctact all URLs from a HTML file.
-As for the parser, BeatifulSoup supports the HTML parser included in the Python standard library, but the user can also easily install and use external parsers. The documentation notes that BeatifulSoup provides the same interface using different parsers, but if HTML or XML is compared, or if the provided HTML is incorrect, the resulting parse trees will be different depending on the selected parser.
-\end{Description of BeautifulSoup4}
+\section{Introduction}
 
-\begin{BeautifulSoup4 Examples}
+\subsection{What is BeautifulSoup?}
+ BeatifulSoup is a library for Python which provides functionality for navigating and extracting data from HTML and XML markup. It does so by using external parsers, specifiable by the users of the library, whose output is assembled by BeautifulSoup to generate a tree structure, the nodes of which are tags in the HTML/XML markup. Thus, children of any given tag are nested tags. \\
+
+ The BeautifulSoup library is compatible with Python 2.7 and Python 3.2, but we have limited the scope of our testing to using version 2.7. The most recent version of BeautifulSoup is 4, abbreviated BS4. Previous (and no longer unsupported) versions of BeautifulSoup are available, but are not subject to any tests in this project.  \\
+
+Given some markup, the library creates an `soup' object, containing all the information in the markup. In the following example, we call the BeautifulSoup constructor with some markup, using the HTML parser that comes with Python: 
+\newpage
+
+\begin{lstlisting}[style = pythonstyle]
+a_simple_soup = BeautifulSoup(
+    '''
+    <html>
+      <head>
+      </head>
+      <body>
+        <p>
+          <a>An anchor tag</a>
+        </p>
+      </body>
+    </html>
+    ''', "html.parser")
+\end{lstlisting}
+
+The soup object created is a rather complex. Each tag in the markup gives rise to an object inside the soup, simply referred to as \textit{Tag} object. the \textit{Tag} objects are named according to the name of the tag. These are then organized in a tree structure, such that any inner tag as a child of its parent tag. We can access these objects directly. For example, we can access the \texttt{head} object inside the soup show above like so:
+
+\begin{lstlisting}[style = pythonstyle]
+a_simple_soup.head
+\end{lstlisting}
+
+Note that we are not required to first access its parent, i.e. we do not have to specify
+\begin{lstlisting}[style = pythonstyle]
+a_simple_soup.html.head
+\end{lstlisting}
+although this is perfectly valid also. If the tree structure contains several tags with the same name, then the first one in the markup will be accessed.  \\
+
+The library contains a number of functions for navigating and modifying the tree, many of which were tested in this project. For example, the following call: 
+
+\begin{lstlisting}[style = pythonstyle]
+a_simple_soup.find_all("a")
+\end{lstlisting}
+will return a list of all \textit{Tag} objects it finds in the tree structure. \\
+
+%here include an example of modifying the tree
+
+Many other functions are available. We refer the curious reader to the BeautifulSoup documentation, for a complete list. The documentation is available here: \url{https://www.crummy.com/software/BeautifulSoup/bs4/doc/}
+
+\iffalse
+\section{BeautifulSoup4 Examples}
 Here we will illustrate how BeautifulSoup represents the parse tree using a basic HTML example. The HTML code is defined as follows:
 
 Using the following example HTML file:
-html_doc """
+
+
+
+\begin{lstlisting}[style = htmlstyle]
 <html>
-<head>
-<title>The Title of the webpage</title>
-</head>
+ <head>
+ </head>
+ <body>
+  <p>
+   <a>An anchor tag</a>
+  </p>
+ </body>
+</html>
+\end{lstlisting}
 
-<body>
-<p class="title"><b>The title of the page</b></p>
-<p class="story">The information on the page 
-<a href="http://example.com" id="link1">Example link</a> and 
-<a href="http://example2.com" id="linke">Example link 2</a> etc.</p>
-</p>
-"""
+To start the first task is to generate the soup-object which all other functionalities of the library depend on. Using the above example defined as html\_doc, the initial command is as follows:
 
-To start the first task is to generate the soup-object which all other functionalities of the library depend on. Using the above example defined as html_doc, the initial command is as follows:
-soup = BeautifulSoup(html_doc, 'html.parser')
+\begin{lstlisting}[style = pythonstyle]
+@decorator
+#this is a comment
+def cls.soup = BeautifulSoup("", "html.parser")
+\end{lstlisting}
 The function to Beautifulsoup takes two arguments, the first argument is the markup to be parsed, and the second defines which type of parser to be used. The return value is the generated soup-object.
 
-After the soup object is generated there are several ways of traversing the parse tree and manipulating it. For example using soup.title, soup.title.name and soup.title.string you can access the title tag, the name of the tag and the contained string. The library also provides function, for example to get the two a-tags containd you could call soup.find_all('a') which then returns:
-'<a href="http://example.com" id="link1">Example link</a>, '<a href="http://example.com'' id="link2">'
-To retreive all text contained the function call soup.get_text() will return just that.
-To use different parsers the user simply calls the constructor function BeautifulSoup() with different arguments, for example BeautifulSoup(xml_file, 'lxml') to use the lxml-parser, or BeautifulSoup(html_doc, 'html5lib') to use the html5lib-parser (this ofcourse assumes that the respective parser is already installed on the local system, easily done through pip, apt-get or similar).
+After the soup object is generated there are several ways of traversing the parse tree and manipulating it. For example using soup.title, soup.title.name and soup.title.string you can access the title tag, the name of the tag and the contained string. The library also provides function, for example to get the two a-tags containd you could call soup.find\_all('a') which then returns:
+
+\begin{lstlisting}[style = htmlstyle]
+<a href="http://example.com" id="link1">Example link</a>
+<a href="http://example.com'' id="link2">
+\end{lstlisting}
+
+To retreive all text contained the function call soup.get\_text() will return just that.
+To use different parsers the user simply calls the constructor function BeautifulSoup() with different arguments, for example BeautifulSoup(xml\_file, 'lxml') to use the lxml-parser, or BeautifulSoup(html\_doc, 'html5lib') to use the html5lib-parser (this ofcourse assumes that the respective parser is already installed on the local system, easily done through pip, apt-get or similar).
 
 Overall the BeautifulSoup library only provides four different kinds of objects. Those are Tag, NavigableString, BeutifulSoup and Comment. The Tag object corresponds to a HTML or XML tag from the origial code. The NavigableString corresponds to text from within a tag, it is similar to a Python Unicode String but with navigational support regarding the parse tree (using the function unicode() they can easily be converted to regular python strings). The BeautifulSoup object is the representation of the whole document, providing the same navigational functionality of the parse tree as the Tag object. The Comment object represents comments from the markup language. There are also some special cases of defined classes which represents specifics from XML documents, these are however just implemented as subclasses of the NavigableString object type with relevant added functionality. 
 
-\end{BeautifulSoup4 Examples}
+
 
 lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
+\fi
 
+
+\section{Method}
+This is a section describing what we did.
+This includes how we wrote the tests, what tools we used, and how we structured the code. 
+How is the implementation of the black-box different than the white-box? why?
+
+
+\subsection{Blackbox testing}
+This section is details the black-box testing
+%Instructions\\
+%%You should describe all your tests, both black and white box tests. For your tests you should describe how you derived them and what the tests do. Obviously you will describe some tests in groups. If you have over 100 tests in your code, then we do not expect 100 separate descriptions.
+
+\subsubsection{Navigation}
+Navigating the soup tree by directly accessing the subojects of the soup, (i.e. soup.html.title)
+
+\subsubsection{Search}
+Searching the tree (i.e. find, find\_all, find\_parent)
+
+\subsubsection{Insert/Delete/Edit}
+Editing the tree (i.e. insert, append, wrap)
+
+\subsection{Whitebox testing}
+Here all our white box will go.
+
+\section{Results}
+This is a section that presents what we found out. Did we find bugs in the library?
+
+\section{Discussion}
+This section discusses the results. What can we infer from the tests? What did we learn? What did we omit? Why did we pick the tests we picked?
+
+
+\section{Conclusion}
+This section is a summary of the project
+
+\section{Appendix}
+Here we insert all our code
 
 \end{document}

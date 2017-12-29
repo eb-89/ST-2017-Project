@@ -22,14 +22,14 @@ BLACKBOX
 *soup.title
 soup.body.diverse   # går ut på att zooma i trädet
 title_tags.contents
-.CONTENTS
-.children
-.descendants
+*.CONTENTS
+*.children
+*.descendants
 *.string
 *.strings
-.stripped_strings
-.parent
-.parents
+*.stripped_strings
+*.parent
+*.parents
 
 --search--
 *find()
