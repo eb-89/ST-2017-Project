@@ -1,11 +1,45 @@
+## File for white box testing of the BS4 web scraping library.
+## This code provides full branch coverage of the functions find and find_all
+## as well as the internal function _find_all
+
+
+## Erik Bertse
+## Sara Gustavsson
+## Moa Marklund 
+## Henrik Thorsell
+
+## Software Testing, 5c
+## Autumn 2017 
+## Uppsala University
+
+
 import unittest
+import itertools
 from bs4 import BeautifulSoup
 from bs4 import SoupStrainer
 
+
+## WARNING ## This is a badly written iterator, specifically for breaking _find_all ###
+## DONT USE THIS CODE IF YOU NEED AN ITERATOR 
+class EvilIter():
+	def __init__(self,breaker):
+		self.current = breaker
+	
+	def __iter__(self):
+		return self
+
+	def next(self):
+		if self.current == 0:
+			raise StopIteration
+		else:
+			self.current = self.current - 1
+			return self
+
+	def  __len__(self):
+		return 0
+
+
 class TestBS(unittest.TestCase):
-
-
-	#tag = self.a_simple_soup.find("")
 
 	def test_soup_branch(self):
 
@@ -25,7 +59,7 @@ class TestBS(unittest.TestCase):
 
 		self.tiny_soup = BeautifulSoup(
 		'''
-		<html><html>
+		<html></html>
                 ''', "html.parser")
 
 		#Here we call find directly
@@ -51,10 +85,9 @@ class TestBS(unittest.TestCase):
 		#tag from which the search started.
 		tag = self.tiny_soup.find_all("a", recursive = False)
 
-		
-		
-		
-
+		#This is far outside of normal BS usage
+		iterator = EvilIter(3)
+		tag = self.tiny_soup._find_all("a", None, None, None, recursive = False, generator = iterator)
 
 if __name__ == '__main__':
 	unittest.main()
