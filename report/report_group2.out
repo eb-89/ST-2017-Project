@@ -1,12 +1,16 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
 \BOOKMARK [2][-]{subsection.1.1}{What is BeautifulSoup?}{section.1}% 2
 \BOOKMARK [1][-]{section.2}{Method}{}% 3
-\BOOKMARK [2][-]{subsection.2.1}{Blackbox testing}{section.2}% 4
-\BOOKMARK [3][-]{subsubsection.2.1.1}{Navigation}{subsection.2.1}% 5
-\BOOKMARK [3][-]{subsubsection.2.1.2}{Search}{subsection.2.1}% 6
-\BOOKMARK [3][-]{subsubsection.2.1.3}{Insert/Delete/Edit}{subsection.2.1}% 7
-\BOOKMARK [2][-]{subsection.2.2}{Whitebox testing}{section.2}% 8
-\BOOKMARK [1][-]{section.3}{Results}{}% 9
-\BOOKMARK [1][-]{section.4}{Discussion}{}% 10
-\BOOKMARK [1][-]{section.5}{Conclusion}{}% 11
-\BOOKMARK [1][-]{section.6}{Appendix}{}% 12
+\BOOKMARK [2][-]{subsection.2.1}{Black box testing}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.2}{White box testing}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Results}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Black box testing}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{White box testing}{section.3}% 8
+\BOOKMARK [1][-]{section.4}{Discussion}{}% 9
+\BOOKMARK [2][-]{subsection.4.1}{The documentation}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.2}{Class attributes and navigation}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.3}{Tag and Soup equality}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.4}{The failing black box tests}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.5}{The white box hacks}{section.4}% 14
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 15
+\BOOKMARK [1][-]{section.6}{Appendix}{}% 16
