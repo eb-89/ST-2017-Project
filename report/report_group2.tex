@@ -82,7 +82,7 @@
 \section{Introduction}
 
 \subsection{What is BeautifulSoup?}
- BeatifulSoup is a library for Python which provides functionality for navigating and extracting data from HTML and XML markup. It does so by using external parsers, specifiable by the users of the library, whose output is assembled by BeautifulSoup to generate a tree structure, the nodes of which are tags in the HTML/XML markup. Thus, children of any given tag are nested tags. \\
+ BeatifulSoup is a Python library which provides functionality for navigating and extracting data from HTML and XML markup. It does so by using external parsers, specifiable by the users of the library, whose output is assembled by BeautifulSoup into a tree structure, the nodes of which are tags in the HTML/XML markup. Thus, children of any given tag are nested tags. \\
 
  The BeautifulSoup library is compatible with Python 2.7 and Python 3.2, but we have limited the scope of our testing to using version 2.7. The most recent version of BeautifulSoup is 4, abbreviated BS4. Previous (and no longer supported) versions of BeautifulSoup are available, but are not subject to any tests in this project.  \\
 
@@ -116,7 +116,7 @@ Note that we are not required to first access its parent, i.e. we do not have to
 \begin{lstlisting}[style = pythonstyle]
 a_simple_soup.html.head
 \end{lstlisting}
-although this is perfectly valid also. If the tree structure contains several tags with the same name, then the first one in the markup will be accessed. Please refer to the `Discussion' section for more information on how this works. \\
+although this is perfectly valid also. If the tree structure contains several tags with the same name, then the first one in the markup will be accessed. Please refer to the Discussion section for more information on how this works. \\
 
 The library contains a number of functions for navigating and modifying the tree, many of which were tested in this project. The following call exemplifies searching the tree. The call: 
 
@@ -144,7 +144,7 @@ We have tested a subset of the total functionality of the BeautifulSoup library.
 We started by looking over the total functionality of the BeautifulSoup library. This included reading all the documentation, and quickly going over the source code. We finally decided to perform black box testing on the following functionality, divided into three sections.
 
 \begin{itemize}
-  \item Navigation with class attributes. \\
+  \item Navigation with attributes. \\
   The following attributes were selected: 
   \begin{itemize}
    \setlength\itemsep{-0.05em}
@@ -163,7 +163,7 @@ We started by looking over the total functionality of the BeautifulSoup library.
    \item \tbt{soup.head}
    \item \tbt{soup.title} 
   \end{itemize}
-  There were originally plans to provide more tests of the last mentioned kind, but these were cut. Please refer the the discussion section for more information on this.
+  There were originally plans to provide more tests for accessing specific tags in this way, but these were cut. Please refer the  Discussion section for more information on this.
 
   \item Searching the tree. \\
   The following search functions were selected: 
@@ -196,9 +196,6 @@ We started by looking over the total functionality of the BeautifulSoup library.
     \end{itemize}
 \end{itemize}
 
-%Instructions\\
-%%You should describe all your tests, both black and white box tests. For your tests you should describe how you derived them and what the tests do. Obviously you will describe some tests in groups. If you have over 100 tests in your code, then we do not expect 100 separate descriptions.
-
 Since all the functions and attributes listed above require soup objects or tag objects to operate on, we proceeded to define test data. This was done in the initialization code in the file containing the black box tests. Here we initialized several soup objects, by feeding some markup into the soup constructor. The markup was selected to be small and easy to read, yet provided enough structure to write non-trivial tests.  \\ 
 
 Many, but not all, of the tests that pertain to navigation and searching use this test data. \\
@@ -207,7 +204,7 @@ Unfortunately, all of the functions that modify the tree could not be run on thi
 
 The solution was to define a new soup object for each test that modifies the tree structure. The markup used is generally very short, only as much as necessary to test the modification under consideration. \\
 
-The expected output of navigation and searching is almost always a tag object. Given a soup object to be tested, we define free-standing tag using the \tbt{new\_tag()} function. We use these tags to compare with the output of the function under consideration. See the Discussion section for details on Tag and Soup equality. \\
+The expected output of navigation and searching is almost always a tag object. Given a soup object to be tested, we define free-standing tag using the \tbt{new\_tag()} factory function. We use these tags to compare with the output of the function under consideration. See the Discussion section for details on Tag and Soup equality. \\
 
 We used the documentation as a specification on what each function should return. We let the specification inform the tests. Where applicable, there are tests to test negative results (e.g. searching for a tag that is not present), or edge cases (e.g. clearing the contents of an empty tag). \\
 
@@ -266,7 +263,7 @@ Coverage was measured with the tool called Coverage \footnote{\url{https://cover
 
 \subsection{The documentation}
 
-The documentation available for the library is presented in a relatively informal style, with small and informal examples. There does not seem to be any rigorous documentation available, and therefore, it is not always clear what functions should return (or what modifications will be made to the tree structure) in edge cases. For example, for functions that takes strings as parameters, the library's behavior on an empty string is unclear. We have therefore been forced on make subjective decisions as to what makes a test pass. 
+The documentation available for the library is presented in a relatively informal style, with small and informal examples. There does not seem to be any rigorous documentation available, and therefore, it is not always clear what functions should return (or what modifications will be made to the tree structure) in edge cases. For example, for functions that take strings as parameters, the library's behavior on an empty string is unclear. We have therefore been forced on make subjective decisions as to what makes a test pass. 
 
 This has resulted in some failing tests, although, in all cases but one, the results are debatable. Please see the failing black box testing subsection further down.
 
@@ -313,7 +310,7 @@ A more rigorous definition was found inside the BeautifulSoup source:
 
 The Soup class contains a factory function called \tbt{new\_tag()} that generates a new tag. This tag is not placed in the tree structure. Thus, to compare the output of a function, we define a new tag, and compare the expected output with this tag.
 
-The tests underwent consistency rework, so that all tests conformed with this notion of tag equality. It is also on basis of this notion of equality that some tests fail. 
+The tests underwent consistency rework, so that all tests conformed with this notion of tag equality. It is also on the basis of this notion of equality that some tests fail. 
 
 \subsection{The failing black box tests}
 
@@ -333,7 +330,7 @@ soup.select("#my_id")
 will return a list of items tags whose \tbt{id} attribute equals \tbt{\color{dark-green} my\_id}.  \\
 
 
-The documentation does not specify the behavior of this function when the input is an empty string. We made the subjective assumption that the call should return \tbt{None}, but instead, BeautifulSoup crashes with an uncaught IndexError, so we consider this a proper bug. \\
+The documentation does not specify the behavior of this function when the input is an empty string. We made the subjective assumption that the call should return \tbt{None}, but instead, BeautifulSoup crashes with an uncaught IndexError exception, so we consider this a proper bug. \\
 
 \noindent\begin{minipage}{\textwidth}
 \indent{\hspace{12pt}} The tests at lines 612 and 670
@@ -345,7 +342,7 @@ test_unwrap(self):
 \end{lstlisting}
 \end{minipage}
 
-fail. They both fail for similar reasons. The \tbt{replace()} function should replace given element with another element. The \tbt{unwrap()} function would remove a tag, but leave the tag's contents untouched. 
+fail. They both fail for similar reasons. The \tbt{replace()} function should replace the object (tag) that called it with the function input. The \tbt{unwrap()} function should remove a tag, but leave the tag's contents untouched. 
 
 
 The issue here is that the tree structure is not updated accordingly. Consider a soup created from the following markup:
@@ -372,7 +369,7 @@ fails. Here we run the \tbt{find()} function with an empty string. Again, the be
 
 \subsection{The white box hacks}
 
-The goal of the white box testing was to achieve full branch coverage of the functions \tbt{find()}, \tbt{find\_all()}, and the internal function \tbt{\_find\_all()}. It turned out that \tbt{find()} calls the function \tbt{find\_all}, which in turn calls \tbt{\_find\_all()}. This internal function is relatively complicated, and the test file for branch coverage contains various calls so as to execute every branch. We direct the interested reader to the BeautifulSoup source code, available freely on GitHub, and only discuss the more challenging parts here. \\
+The goal of the white box testing was to achieve full branch coverage of the functions \tbt{find()}, \tbt{find\_all()}, and the internal function \tbt{\_find\_all()}. It turned out that \tbt{find()} calls the function \tbt{find\_all()}, which in turn calls \tbt{\_find\_all()}. This internal function is relatively complicated, and the test file for branch coverage contains various calls so as to execute every branch. We direct the interested reader to the BeautifulSoup source code, available freely on GitHub, and only discuss the more challenging parts here. \\
 
 \noindent\begin{minipage}{\textwidth}
 \indent{\hspace{12pt}} A section of \tbt{\_find\_all()} is the following code:
@@ -389,22 +386,19 @@ while True:
             results.append(found)
             if limit and len(results) >= limit:
                 break
-  return results
+return results
 \end{lstlisting}
 \end{minipage}
 
-Making line 7 in the above excerpt false required some trickery. Python generators are a type of Python iterator objects which contain a function called \tbt{next} that return themselves, so \tbt{i}, at line 7, is an iterator object. Objects in Python generally return true when evaluated as a boolean (but not always). Even if the iterator was empty, the loop would break at line 6, before ever reaching line 7. So, given normal usage, the line 7 will always return true. \\
+Making line 7 in the above excerpt false required some trickery. A Python iterator is an object used for iteration. Iterators must implement (among other functions) a \tbt{next()} function that returns an iterator (usually itself). Python generators are a type of Python iterators. Thus, \tbt{i}, at line 7, is an iterator object. Please refer to the Python documentation for more information on iterators and generators. 
 
-The solution was to write a custom iterator class, and override its \tbt{\_\_len\_\_} function, to always return 0, while making sure that it would iterate a number of times first. This way, we can assure that the condition on line 7 evaluates to false a certain number of times before the iterator throws the StopIteration exception. We do this to prevent an infinite loop. Note that this iterator was written specifically to break BeautifulSoup, and not even close to how iterators are supposed to work. The code for this custom iterator can be found in the white box testing file. \\
+Objects in Python generally return true when evaluated as a boolean (but not always). Even if the iterator was empty, calling next on it would throw a StopIteration exception, and the loop would break at line 6, before ever reaching line 7. So, given normal usage, the line 7 will always return true. \\
 
-After this, we feed this custom iterator directly into \tbt{\_find\_all()}, since feeding the iterator into both \tbt{find()} and \tbt{find\_all()} causes BeautifulSoup to throw a TypeError exception. Note that this is not the intended usage of BeautifulSoup, yet the only way we found to execute the false branch at line 7 to execute. \\
+The solution was to write a custom iterator class, and override its \tbt{\_\_len\_\_} function, to always return 0, while making sure that it would iterate a number of times first. This way, we can ensure that the condition on line 7 evaluates to false a certain number of times before the iterator throws the StopIteration exception. We do this to prevent an infinite loop. Note that this iterator was written specifically to break BeautifulSoup, and that this is not how iterators are supposed to work. The code for this custom iterator can be found in the white box testing file. \\
 
-Through this method we achieved 100\% branch coverage of these functions. 
+After this, we feed this custom iterator directly into \tbt{\_find\_all()}, since feeding the iterator into both \tbt{find()} and \tbt{find\_all()} causes BeautifulSoup to throw a TypeError exception. Note that this is not the intended usage of BeautifulSoup, but the only way we found to get the false branch at line 7 to execute. \\
 
-
-
-
-
+Through this method we achieved 100\% branch coverage of these three functions. 
 
 \section{Conclusion}
 
@@ -413,7 +407,7 @@ We performed black box testing on a selection of function in the BeautifulSoup l
 \section{Appendix}
 
 The file \tbt{unittest\_tests.py} contains the code for black box testing. \\
-the file \tbt{unittest\_cov\_tests.py} contains the code for black box testing. \\
+The file \tbt{unittest\_cov\_tests.py} contains the code for white box testing. \\
 \vspace{1em}
 
 \begin{adjustwidth}{-6.5em}{0em}
