@@ -43,7 +43,6 @@ class TestBS(unittest.TestCase):
 
   def test_soup_branch(self):
 
-
     self.a_simple_soup = BeautifulSoup(
     '''
     <html>
@@ -61,32 +60,50 @@ class TestBS(unittest.TestCase):
     '''
     <html></html>
                 ''', "html.parser")
-
+    
+    a_tag = self.a_simple_soup.a
+    
     #Here we call find directly
     tag = self.a_simple_soup.find("a")
+    self.assertEqual(tag, a_tag)
 
     #Here we call find all directly
     tag = self.a_simple_soup.find_all("a")
+    self.assertEqual(tag, [a_tag])
 
     #Here we call find all directly, with no argument
+    html = self.a_simple_soup.html
+    head = self.a_simple_soup.head
+    body = self.a_simple_soup.body
+    p = self.a_simple_soup.p
+    a = self.a_simple_soup.a
+    b = self.a_simple_soup.b
+
     tag = self.a_simple_soup.find_all()
+    self.assertEqual(tag, [html, head, body, p, a, b])
 
     #here kwarg contains "string", and there is no text argument.
     tag = self.a_simple_soup.find_all(string = "a")
+    self.assertEqual(tag, [])
 
     #here we define a custom SoupStrainer
     strainer = SoupStrainer("a")
     tag = self.a_simple_soup.find_all(strainer)
+    self.assertEqual(tag, [a_tag])
 
     #here we find with limit
     tag = self.a_simple_soup.find_all("a", limit = 1)
+    self.assertEqual(tag, [a_tag])
 
     #Putting recursive to False makes BS only look one level down from the 
     #tag from which the search started.
     tag = self.tiny_soup.find_all("a", recursive = False)
+    self.assertEqual(tag, [])
 
     #This is far outside of normal BS usage
     iterator = EvilIter(3)
     tag = self.tiny_soup._find_all("a", None, None, None, recursive = False, generator = iterator)
+    self.assertEqual(tag, [])
+
 if __name__ == '__main__':
   unittest.main()
