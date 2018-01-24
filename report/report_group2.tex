@@ -5,7 +5,9 @@
 \usepackage{color}
 \usepackage{hyperref}
 \usepackage{changepage}
-
+\usepackage{tikz}
+\usetikzlibrary{arrows,positioning,automata,shadows,fit,shapes}
+\usepackage{makecell}
 
 
 \newcommand{\tbt}[1]{\texttt{\textbf{#1}}}
@@ -196,17 +198,64 @@ We started by looking over the total functionality of the BeautifulSoup library.
     \end{itemize}
 \end{itemize}
 
-Since all the functions and attributes listed above require soup objects or tag objects to operate on, we proceeded to define test data. This was done in the initialization code in the file containing the black box tests. Here we initialized several soup objects, by feeding some markup into the soup constructor. The markup was selected to be small and easy to read, yet provided enough structure to write non-trivial tests.  \\ 
+The criterion we aimed at satisfying could be expressed in the following way: for each function listed above, execute the function, and verify its output. Because of the state of the documentation, detailed in the Discussion section, this involved some subjective assessment of what constitutes correct output. 
 
-Many, but not all, of the tests that pertain to navigation and searching use this test data. \\
+As an example, consider the function \tbt{find()}. For this function, three tests were written.
+\begin{lstlisting}[style = pythonstyle]
+  def test_find(self):
+    '''Tests finding tags with a given name '''
+  def test_find_empty(self):
+    ''' Test finding a tag with empty string name '''
+  def test_find_fail(self):
+    '''Test not finding a tag '''
+\end{lstlisting}
 
-Unfortunately, all of the functions that modify the tree could not be run on this test data. If a test modifies the tree structure in some way, then the next test would obviously use the modified test data, which was not our intention.
+The first of these tests use the soup objects \tbt{a\_nested\_soup} and \tbt{a\_simple\_soup}, defined in the initialization code, and tests whether the \tbt{find()} function outputs the correct result. The \tbt{find()} function supposed to return the first tag of it finds, whose name is the string argument fed to the function. Since \tbt{a\_simple\_soup} only contains a single anchor tag, calling
+\begin{lstlisting}[style = pythonstyle]
+a_simple_soup.find("a")
+\end{lstlisting}
+is expected to return the single found tag, and nothing else. Since \tbt{a\_nested\_soup} contains several anchor tags, we test whether the function returns the first tag to lexically appear in the markup. \\
+
+The example above exemplifies the basic layout of each test. Specifically, each test consists of 
+\begin{itemize}
+  \item The reason for the existence of the test, documented as a Python docstring.
+  \item A soup object to either search or modify.
+  \item The function call itself.  
+  \item Assertion of the equality of the output and the expected output.
+\end{itemize}
+
+Since all the functions and attributes listed above require soup objects or tag objects to operate on, we proceeded to define test data that could be used in several tests. This data consists of several soup objects and tag objects. This was done in the initialization code in the file containing the black box tests. Here we initialized several soup objects, by feeding some markup into the soup constructor. The markup was selected to be small and easy to read, yet provided enough structure to write non-trivial tests.  \\ 
+
+Many, but not all, of the tests that pertain to navigation and searching use the test data defined in the initialization code. \\
+
+Unfortunately, all of the functions that modify the tree could not be run on this test data. If a test modifies the tree structure in some way, then the next test would obviously use the modified test data, which was not our intention. \\
 
 The solution was to define a new soup object for each test that modifies the tree structure. The markup used is generally very short, only as much as necessary to test the modification under consideration. \\
 
-The expected output of navigation and searching is almost always a tag object. Given a soup object to be tested, we define free-standing tag using the \tbt{new\_tag()} factory function. We use these tags to compare with the output of the function under consideration. See the Discussion section for details on Tag and Soup equality. \\
+For example, the test: 
+\begin{lstlisting}[style = pythonstyle]
+    def test_clear(self):
+    ''' Clear the contents of a HTML <a href> tag. '''
+\end{lstlisting}
+which tests the \tbt{clear()} function, operates on the following simple markup
+\begin{lstlisting}[style = htmlstyle]
+  <a href="http://example.com/">I linked to <i>example.com</i></a>
+\end{lstlisting}
 
-We used the documentation as a specification on what each function should return. We let the specification inform the tests. Where applicable, there are tests to test negative results (e.g. searching for a tag that is not present), or edge cases (e.g. clearing the contents of an empty tag). \\
+The expected output of navigation and searching is almost always a tag object. Given a soup object to be tested, we define free-standing tag using the \tbt{new\_tag()} factory function. We use these tags to compare with the output of the function under consideration. See the Discussion section for details on Tag and Soup equality. 
+
+For functions that modify the tree structure of the soup object, the expected output is a soup object, and therefore these tests begin with an instantiation of a soup object that is used for comparison. \\
+
+We used the documentation as a specification on what each function should return. We let the documentation inform the tests, i.e. the documentation specifies the what is supposed to be the correct behavior of a given function, and we test whether the function behaves as stated in the documentation. Where applicable, there are tests to test negative results (e.g. searching for a tag that is not present), or edge cases (e.g. clearing the contents of an empty tag). \\
+
+For example, the test:
+\begin{lstlisting}[style = pythonstyle]
+    def test_clear_empty(self):
+    ''' Clear the contents of an empty HTML <a href> tag. '''
+\end{lstlisting}
+executes the \tbt{clear()} function on a tag that is already empty, and verifies that the input remains unchanged. \\
+
+Towards the end of the project, the black box tests underwent considerable consistency rework, so as to conform the same notion of soup and tag equality. \\
 
 There are 53 tests in total. The purpose of each test in specified as a docstring.
 
@@ -228,7 +277,327 @@ We started by studying the internal structure of the function. This allowed us t
 
 Unfortunately, this code was not sufficient to achieve branch coverage, and we had to extend it.
 
-To achieve full branch coverage, we had to step far outside the normal usage the BeautifulSoup library, and break a few Python principles along the way. See the Discussion section for how this was done.
+To achieve full branch coverage, we had to step far outside the normal usage the BeautifulSoup library, and break a few Python principles along the way. See the Discussion section for how this was done. \\
+
+While we will use the term \textit{branch coverage} throughout this document, the concept is often referred to as \textit{edge coverage}. Our working definition is as follows: 
+
+\begin{center}
+  \textit{Given the control flow graph of some code, we satisfy the edge coverage criterion if we execute each edge in the graph.}
+\end{center} 
+
+Equivalently, we could state that we achieve branch coverage if we execute each path in the graph of length (up to) one.
+
+On the following page, we present the source code of the \tbt{\_find\_all} function in full: 
+\newpage
+\begin{lstlisting}[style = pythonstyle-small]
+def _find_all(self, name, attrs, text, limit, generator, **kwargs):
+      "Iterates over a generator looking for things that match."
+
+      if text is None and 'string' in kwargs:
+          text = kwargs['string']
+          del kwargs['string']
+
+      if isinstance(name, SoupStrainer):
+          strainer = name
+      else:
+          strainer = SoupStrainer(name, attrs, text, **kwargs)
+
+      if text is None and not limit and not attrs and not kwargs:
+          if name is True or name is None:
+              # Optimization to find all tags.
+              result = (element for element in generator
+                          if isinstance(element, Tag))
+              return ResultSet(strainer, result)
+          elif isinstance(name, basestring):
+              # Optimization to find all tags with a given name.
+              result = (element for element in generator
+                        if isinstance(element, Tag)
+                          and element.name == name)
+              return ResultSet(strainer, result)
+      results = ResultSet(strainer)
+      while True:
+          try:
+              i = next(generator)
+          except StopIteration:
+              break
+          if i:
+              found = strainer.search(i)
+              if found:
+                  results.append(found)
+                  if limit and len(results) >= limit:
+                      break
+      return results
+\end{lstlisting}
+
+We consider each code block as a node. There is a (directed) edge between two blocks, if execution can flow from one block to the other. Thus, we constructed the following control flow graph, presented on the next page.
+
+\newpage
+\begin{tikzpicture}[->,>=stealth',very thick, transform canvas={scale=0.9, xshift = 9em}]
+  \tikzset{
+    state/.style={
+      rectangle,
+      draw=black, very thick,
+      inner sep=2pt,
+      text centered
+    },
+  }
+
+
+
+
+
+  \node[state, above] (S1) {
+    \begin{tabular}{c}
+      S
+    \end{tabular}
+  };
+  
+  \node[state, below right of=S1, yshift=-2em, xshift = 4em, node distance=5em] (S2) {
+    \begin{lstlisting}[style = pythonstyle]
+text = kwargs['string']
+del kwargs['string'] 
+    \end{lstlisting}
+  };
+  
+  \node[state, below of=S1, node distance=10em] (S3) {
+    \begin{tabular}{c}
+      S
+    \end{tabular}
+  };
+  
+  \node[state, below of=S3, xshift = -10em, node distance=5em] (S4) {
+    \begin{lstlisting}[style = pythonstyle]
+strainer = name 
+    \end{lstlisting}
+  };
+
+  \node[state, below of=S3, xshift = 10em, node distance=5em] (S5) {
+    \begin{lstlisting}[style = pythonstyle]
+strainer = SoupStrainer(name, attrs, text, **kwargs)
+    \end{lstlisting}
+  };
+  
+  \node[state, below of=S3, node distance=10em] (S6) {
+    \begin{tabular}{c}
+      S
+    \end{tabular}
+  };
+
+  \node[state, below right of=S6, xshift = 10em, node distance=8em] (S7) {
+    \begin{tabular}{c}
+      S
+    \end{tabular}
+  };
+
+  \node[state, below of=S7, node distance=4em] (elif) {
+    \begin{tabular}{c}
+      S
+    \end{tabular}
+  };
+
+  \node[state, above right of=S7, node distance=7em] (S8) {
+\begin{lstlisting}[style = pythonstyle]
+result = (element for element in generator 
+          if isinstance(element, Tag)) 
+return ResultSet(strainer, result)
+    \end{lstlisting}
+  };
+
+  \node[state, below of=elif, xshift=9em, node distance=5em] (S9) {
+        \begin{lstlisting}[style = pythonstyle]
+result = (element for element in generator 
+          if isinstance(element, Tag) 
+          and element.name == name) 
+return ResultSet(strainer, result) 
+        \end{lstlisting}
+  };
+
+  \node[state, below of=S6, node distance=10em] (S10) {
+    \begin{lstlisting}[style = pythonstyle]
+results = ResultSet(strainer) 
+    \end{lstlisting}
+  };
+  
+  
+  \path (S1) edge node[anchor=south,above,right]  {1} (S2);
+  \path (S2) edge node[anchor=south,above,right]  {2} (S3);
+  \path (S1) edge node[anchor=south,above, left]  {3} (S3);
+
+  \path (S3) edge node[anchor=south,above, below]  {4} (S4);
+  \path (S3) edge node[anchor=south,above, below]  {5} (S5);
+  \path (S4) edge node[anchor=south,above, below]  {6} (S6);
+  \path (S5) edge node[anchor=south,above, below]  {7} (S6);
+  
+  \path (S6) edge node[anchor=south,above, below]  {8} (S7);
+  \path (S6) edge node[anchor=south,above, left]  {9} (S10);
+
+  \path (S7) edge node[anchor=right,above, left]  {10} (S8);
+  \path (S7) edge node[anchor=right,above, left]  {11} (elif);
+  \path (elif) edge node[anchor=right,above, left]  {12} (S9);
+  \path (elif) edge node[anchor=right,above, above]  {13} (S10);
+
+%NEXT GRAPH
+
+
+
+\node[state, below of=S10, node distance=5em] (S11) {
+    \begin{tabular}{c}
+S
+    \end{tabular}
+  };  
+
+\node[state, below right of=S11, xshift = 5em, node distance=5em] (S12) {
+    \begin{tabular}{c}
+S
+    \end{tabular}
+  };
+  
+\node[state, below left of=S11, node distance=5em] (S13) {
+    \begin{lstlisting}[style = pythonstyle]
+i = next(generator)
+    \end{lstlisting}
+  };
+  
+  \node[state, below of=S13, node distance=10em] (S14) {
+    \begin{lstlisting}[style = pythonstyle]
+break
+    \end{lstlisting}
+  };
+
+\node[state, below of=S14, node distance=5em] (S15) {
+    \begin{lstlisting}[style = pythonstyle]
+return results
+    \end{lstlisting}
+  };
+
+
+\node[state, below of=S12, node distance=5em] (S17) {
+    \begin{lstlisting}[style = pythonstyle]
+found = strainer.search(i)
+    \end{lstlisting}
+  };
+
+\node[state, below of=S17, node distance=5em] (S18) {
+    \begin{lstlisting}[style = pythonstyle]
+results.append(found)
+    \end{lstlisting}
+  };
+
+\node[state, below of=S18, node distance=5em] (S19) {
+    \begin{lstlisting}[style = pythonstyle]
+break
+    \end{lstlisting}
+  };
+
+\node[left of=S1, node distance=4em] (startnode) {};
+\node[right of=S8, node distance=14em] (endnode1) {};
+\node[right of=S9, node distance=14em] (endnode2) {};
+\node[below of=S15, node distance=4em] (endnode3) {};
+
+\path (startnode) edge node[anchor=south,above,right]  {} (S1);
+\path (S8) edge node[anchor=south,above,right]  {} (endnode1);
+\path (S9) edge node[anchor=south,above,right]  {} (endnode2);
+\path (S15) edge node[anchor=south,above,right]  {} (endnode3);
+
+
+\path (S10) edge node[anchor=right,above, left]  {14} (S11);
+  \path (S13) edge node[anchor=south,above,above]  {16} (S12);
+  \path (S12) edge node[anchor=south,above,right]  {17} (S11);
+  \path (S11) edge node[anchor=south,above, above]  {15} (S13);
+
+  \path (S13) edge node[anchor=south,above, right]  {18} (S14);
+  \path (S14) edge node[anchor=south,above, left]  {19} (S15);
+  
+  \path (S12) edge node[anchor=south,above, left]  {20} (S17);
+  \path (S17) edge node[anchor=south,above, left]  {22} (S18);
+  \path (S18) edge node[anchor=south,above, left]  {24} (S19);
+  \path (S19) edge node[anchor=south,above, below]  {25} (S15);
+
+  \path (S17) edge [bend right = 0] node[anchor=south,above, below]  {21} (S11);
+  \path (S18) edge [bend right = 120] node[anchor=south,above, right]  {23} (S11);
+
+\end{tikzpicture} 
+\newpage
+
+Each node corresponds to a block of code. The nodes marked by S are symbolic nodes. They do not correspond to a block of code, rather, they represent only a decision point in the control flow. These are sometimes called \textit{dummy nodes} in the literature. To keep the diagram not too cluttered, we have not marked each edge with the condition that is satisfied when that edge is taken, in the graph. Instead, these are presented in the following table. If an egde has no condition on when it is taken, then it is taken unconditionally. \\
+
+\begin{tabular}{l|l}
+Edge number & Taken when... \\ \hline
+1           &  \lstinline[style = pythonstyle]$text is None and 'string' in kwargs$ is true \\
+2           & - \\
+3           & \lstinline[style = pythonstyle]$text is None and 'string' in kwargs$ is false \\
+4           & \lstinline[style = pythonstyle]$isinstance(name, SoupStrainer)$ is true \\
+5           & \lstinline[style = pythonstyle]$isinstance(name, SoupStrainer)$ is false \\
+6           & - \\
+7           & - \\
+8           & \lstinline[style = pythonstyle]$text is None and not limit and not attrs and not kwargs$ is true \\
+9           & \lstinline[style = pythonstyle]$text is None and not limit and not attrs and not kwargs$ is false \\
+10          & \lstinline[style = pythonstyle]$name is True or name is None$ is true \\
+11          & \lstinline[style = pythonstyle]$name is True or name is None$ is false \\
+12          & \lstinline[style = pythonstyle]$isinstance(name, basestring)$ is true \\
+13          & \lstinline[style = pythonstyle]$isinstance(name, basestring)$ is false\\
+14          & - \\
+15          & - (This edge corresponds to the condition \lstinline[style = pythonstyle]$while True$) \\
+16          & \lstinline[style = pythonstyle]$StopIteration$ exception is not thrown \\ 
+17          & \lstinline[style = pythonstyle]$i$ is false \\
+18          & \lstinline[style = pythonstyle]$StopIteration$ exception is thrown \\ 
+19          & - \\
+20          & \lstinline[style = pythonstyle]$i$ is true \\
+21          & \lstinline[style = pythonstyle]$found$ is false \\
+22          & \lstinline[style = pythonstyle]$found$ is true \\
+23          & \lstinline[style = pythonstyle]$limit and len(results) >= limit$ is false \\
+24          & \lstinline[style = pythonstyle]$limit and len(results) >= limit$ is true \\
+25          & - 
+\end{tabular} \\
+
+Thus, our goal was to execute each edge in the graph. The following summarizes what execution paths various lines of code take in our file for white box testing. \footnote{Although this exposition belongs in the Results section, we put it here to allow the reader to more easily trace out execution paths in the graph} Note that we use the notation [a,b,c]*, to signify repeatedly executing this path (looping). 
+
+The path [15, 16, 20, 21]* is found in all but the last of the paths listed below. The exact number this path executes varies, but generally, it will execute once for every object (\textit{Tag} or \textit{NavigableString}) in the soup object. 
+
+Although, formally, a path is a sequence of nodes, if we state that a path consists of edges, we mean a path consisting of nodes in the edges, only accouting once for the node at the end of an egde, and the node at the start of the next edge, which are equal.  \\
+
+
+The line
+\begin{lstlisting}[style = pythonstyle-small]
+tag = self.a_simple_soup.find_all("a")
+\end{lstlisting}
+executes the path: 3, 5, 7, 8, 11, 12 \\
+
+The line
+\begin{lstlisting}[style = pythonstyle-small]
+tag = self.a_simple_soup.find_all()
+\end{lstlisting}
+executes the path: 3, 5, 7, 8, 10 \\
+
+The line
+\begin{lstlisting}[style = pythonstyle-small]
+tag = self.a_simple_soup.find_all(string = "a")
+\end{lstlisting}
+executes the path: 1, 2, 5, 7, 9, 14, [15, 16, 20, 21]*, 15, 18, 19 \\
+
+The lines
+\begin{lstlisting}[style = pythonstyle-small]
+strainer = SoupStrainer("a")
+tag = self.a_simple_soup.find_all(strainer)
+\end{lstlisting}
+executes the path: 3, 4, 6, 8, 11, 13, 14, [15, 16, 20, 21]*, 15, 16, 20, 22, 23, [15, 16, 20, 21]*, 15, 18, 19 \\
+
+The line
+\begin{lstlisting}[style = pythonstyle-small]
+tag = self.a_simple_soup.find_all("a", limit = 1)
+\end{lstlisting}
+executes the path: 3, 5, 7, 9, 14, [15, 16, 20, 21]*, 15, 16, 20, 22, 24, 25 \\
+
+Note that, at this point, all edges, except the edge labelled 17, are executed at least once. Section 4.5 details the tricks that were required to execute this egde. This resulted in the following line of code, and its corresponding execution path. 
+
+The lines
+\begin{lstlisting}[style = pythonstyle-small]
+iterator = EvilIter(3)
+tag = self.tiny_soup._find_all("a", None, None, None, recursive = False, generator = iterator)
+\end{lstlisting}
+executes the path: 3, 5, 7, 9, 14, [15, 16, 17]*, 15, 18, 19 
+
+
 
 \section{Results}
 
@@ -367,9 +736,10 @@ test_find_empty(self):
 \end{minipage}
 fails. Here we run the \tbt{find()} function with an empty string. Again, the behavior of this call is not specified in the documentation. Our assumption is that the result should be \tbt{None}, especially since it is possible to define a tag with an empty name. This function returns the \tbt{html} tag (whose name is certainly not empty). One could suspect that this call will return the soup object itself, but this is also not true. 
 
+
 \subsection{The white box hacks}
 
-The goal of the white box testing was to achieve full branch coverage of the functions \tbt{find()}, \tbt{find\_all()}, and the internal function \tbt{\_find\_all()}. It turned out that \tbt{find()} calls the function \tbt{find\_all()}, which in turn calls \tbt{\_find\_all()}. This internal function is relatively complicated, and the test file for branch coverage contains various calls so as to execute every branch. We direct the interested reader to the BeautifulSoup source code, available freely on GitHub, and only discuss the more challenging parts here. \\
+The goal of the white box testing was to achieve full branch coverage of the functions \tbt{find()}, \tbt{find\_all()}, and the internal function \tbt{\_find\_all()}. It turned out that \tbt{find()} calls the function \tbt{find\_all()}, which in turn calls \tbt{\_find\_all()}. This internal function is relatively complicated, and the test file for branch coverage contains various calls so as to execute every branch. Please refer to the Method section for the full code for the function \tbt{\_find\_all()}, we provide only the relevant excerpt here . \\
 
 \noindent\begin{minipage}{\textwidth}
 \indent{\hspace{12pt}} A section of \tbt{\_find\_all()} is the following code:
